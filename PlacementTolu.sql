@@ -1,0 +1,15 @@
+Select distinct Trans#
+	, CustID
+	, InterestRate
+	, (Select top 1 EffectiveDate From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID#) as EffectiveDate
+	, (Select top 1 MaturityDate From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID#) as InitMaturityDate
+	, (Select top 1 MaturityDate From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID# desc) as ActualMaturityDate
+	, (Select top 1 Principal From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID#) as CommPrincipal
+	, (Select top 1 Principal From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID# desc) as CurrPrincipal
+	, (Select top 1 Tenure From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID#) as CommTenure
+	, datediff(dd, (Select top 1 EffectiveDate From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID#), (Select top 1 MaturityDate From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID# desc)) as CurrTenure
+	, Liquidated
+	, CPGLAid
+From AMPL_IFund_Trans P
+Where (Select top 1 Year(MaturityDate) From AMPL_IFund_Trans Where Trans# = P.Trans# order by ID# desc) >= 2018 --and CustID = '000'-- YEAR(MaturityDate) >= 2017 
+order by Trans#
